@@ -1,17 +1,25 @@
 {
-  description = "Watch nix flakes in rust";
+  description = "A Basic High Level Synthesis System Using LLVM";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.03";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      rec {
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+      in
+      {
         name = "ahaHLS";
-        packages.ahaHLS = import ./default.nix { pkgs = nixpkgs.legacyPackages.${system}; };
-        packages.default = packages.ahaHLS;
+        packages.default = pkgs.callPackage ./default.nix { };
       }
     );
 }

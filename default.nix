@@ -1,30 +1,49 @@
-{ pkgs ? import <nixpkgs> { } }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+  makeWrapper,
+  cmake,
+  llvmPackages_7,
+  verilog,
+  z3,
+}:
 
-with pkgs;
-stdenv.mkDerivation rec {
-  pname = "ahahls";
+stdenv.mkDerivation {
+  pname = "ahaHLS";
   version = "0.1.0";
 
   src = ./.;
 
+  enableParallelBuilding = true;
+
   nativeBuildInputs = [
     cmake
-
-    # clang++ binary is needed at runtime for tests
-    llvmPackages_7.clang
-    # iverilog binary is needed at runtime for tests
-    verilog
+    makeWrapper
   ];
 
   buildInputs = [
     z3
-    # Only works with llvm 7
     llvmPackages_7.llvm
-    # llvmPackages_7.llvm.lib
-    # llvmPackages_7.llvm.dev
+    llvmPackages_7.clang
+    verilog
   ];
 
+  installPhase = ''
+    install -Dm 755 aha-HLS $out/bin/ahaHLS
+    wrapProgram $out/bin/ahaHLS --prefix PATH ":" ${
+      lib.makeBinPath [
+        z3
+        llvmPackages_7.llvm
+        llvmPackages_7.clang
+        verilog
+      ]
+    }
+  '';
+
   meta = with stdenv.lib; {
-    description = "A Basic High Level Synthesis System Using LLVM";
+    description = "Basic High Level Synthesis System Using LLVM";
+    homepage = "https://github.com/dillonhuff/ahaHLS/";
+    license = licenses.mit;
   };
 }

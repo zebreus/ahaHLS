@@ -14,6 +14,14 @@
 - Z3 SMT solver
 - Icarus Verilog (to run the unit tests of generated verilog)
 
+# Run ahaHLS
+
+You can simply run ahaHLS without installing it using the nix package manager:
+
+```bash
+nix run github:zebreus/ahaHLS
+```
+
 # Build and Test Instructions
 
 With the nix package manager you can open a shell with all the dependencies on the correct versions:
